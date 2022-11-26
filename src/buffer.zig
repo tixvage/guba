@@ -160,9 +160,8 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             const new_str = line_as_unicode.items[from..];
             const old_str = line_as_unicode.items[0..from];
 
-            try self.file.insert(line_number + 1, try su.unicodeToUtf8(self.allocator, new_str));
-            line = &self.file.items[line_number];
             try su.updateUtf8(line, old_str);
+            try self.file.insert(line_number + 1, try su.unicodeToUtf8(self.allocator, new_str));
             try self.cursorDown();
             self.cursor.x = 0;
             self.saveHorizontal();
@@ -186,11 +185,11 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
         },
         c.SDL_SCANCODE_HOME => {
             self.cursor.x = 0;
-            try self.tryRecoverHorizontal();
+            self.saveHorizontal();
         },
         c.SDL_SCANCODE_END => {
             self.cursor.x = @intCast(i32, line.items.len);
-            try self.tryRecoverHorizontal();
+            self.saveHorizontal();
         },
         else => {},
     }
