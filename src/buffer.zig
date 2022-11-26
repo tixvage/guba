@@ -4,6 +4,7 @@ const Font = @import("font.zig");
 const rn = @import("rendering.zig");
 const su = @import("string_utils.zig");
 const print = std.debug.print;
+const stdio = @cImport(@cInclude("stdio.h"));
 
 pub const Utf8Line = su.Utf8Line;
 pub const UnicodeLine = su.UnicodeLine;
@@ -136,7 +137,7 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             if (self.cursor.x == 0) {
                 if (line_number == 0) return;
                 var line_before = &self.file.items[line_number - 1];
-                const line_len = line_before.items.len;
+                const line_len = try std.unicode.utf8CountCodepoints(line_before.items);
                 try line_before.appendSlice(line.items);
                 const deleted_line = self.file.orderedRemove(line_number);
                 deleted_line.deinit();
@@ -181,26 +182,41 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             try self.tryRecoverHorizontal();
         },
         c.SDL_SCANCODE_F1 => {
-            try self.save();
+            try self.save2();
         },
         c.SDL_SCANCODE_HOME => {
             self.cursor.x = 0;
             self.saveHorizontal();
         },
         c.SDL_SCANCODE_END => {
-            self.cursor.x = @intCast(i32, line.items.len);
+            self.cursor.x = @intCast(i32, try std.unicode.utf8CountCodepoints(line.items));
             self.saveHorizontal();
         },
         else => {},
     }
 }
 
+//TODO: ask that in discord server
 fn save(self: *Self) !void {
     const file = try std.fs.cwd().openFile(self.name, .{ .mode = .write_only });
     defer file.close();
+    print("line = {d}\n", .{self.file.items.len});
     for (self.file.items) |line| {
-        try file.writeAll(line.items);
-        try file.writeAll("\n");
+        _ = try file.write(line.items);
+        _ = try file.write("\n");
+    }
+}
+
+fn save2(self: *Self) !void {
+    var name_cstr = try std.cstr.addNullByte(self.allocator, self.name);
+    defer self.allocator.free(name_cstr);
+    var file = stdio.fopen(@ptrCast([*c]const u8, name_cstr), "w").?;
+    defer _ = stdio.fclose(file);
+
+    for (self.file.items) |line| {
+        var line_cstr = try std.cstr.addNullByte(self.allocator, line.items);
+        defer self.allocator.free(line_cstr);
+        _ = stdio.fprintf(file, "%s\n", @ptrCast([*c]const u8, line_cstr));
     }
 }
 
