@@ -182,7 +182,7 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             try self.tryRecoverHorizontal();
         },
         c.SDL_SCANCODE_F1 => {
-            try self.save2();
+            try self.save();
         },
         c.SDL_SCANCODE_HOME => {
             self.cursor.x = 0;
@@ -202,7 +202,7 @@ fn save(self: *Self) !void {
     defer file.close();
     print("line = {d}\n", .{self.file.items.len});
     for (self.file.items) |line| {
-        _ = try file.write(line.items);
+        try file.writeAll(line.items);
         _ = try file.write("\n");
     }
 }
