@@ -196,27 +196,11 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     }
 }
 
-//TODO: ask that in discord server
 fn save(self: *Self) !void {
-    const file = try std.fs.cwd().openFile(self.name, .{ .mode = .write_only });
+    const file = try std.fs.cwd().createFile(self.name, .{});
     defer file.close();
-    print("line = {d}\n", .{self.file.items.len});
     for (self.file.items) |line| {
-        try file.writeAll(line.items);
-        _ = try file.write("\n");
-    }
-}
-
-fn save2(self: *Self) !void {
-    var name_cstr = try std.cstr.addNullByte(self.allocator, self.name);
-    defer self.allocator.free(name_cstr);
-    var file = stdio.fopen(@ptrCast([*c]const u8, name_cstr), "w").?;
-    defer _ = stdio.fclose(file);
-
-    for (self.file.items) |line| {
-        var line_cstr = try std.cstr.addNullByte(self.allocator, line.items);
-        defer self.allocator.free(line_cstr);
-        _ = stdio.fprintf(file, "%s\n", @ptrCast([*c]const u8, line_cstr));
+        try file.writer().print("{s}\n", .{line.items});
     }
 }
 
