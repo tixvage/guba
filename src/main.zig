@@ -73,7 +73,6 @@ pub fn main() !void {
         }
         _ = c.SDL_SetRenderDrawColor(renderer, 24, 24, 24, 255);
         _ = c.SDL_RenderClear(renderer);
-        _ = c.SDL_SetRenderDrawColor(renderer, 0xcc, 0x8c, 0x3c, 255);
         try buffer.render(renderer);
         c.SDL_RenderPresent(renderer);
         c.SDL_Delay(1000 / 60);

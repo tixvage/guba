@@ -1,10 +1,9 @@
 const std = @import("std");
 const c = @import("sdl2");
-const Font = @import("font.zig");
 const rn = @import("rendering.zig");
 const su = @import("string_utils.zig");
 const print = std.debug.print;
-const stdio = @cImport(@cInclude("stdio.h"));
+const Font = @import("font.zig");
 
 pub const Utf8Line = su.Utf8Line;
 pub const UnicodeLine = su.UnicodeLine;
@@ -82,6 +81,7 @@ pub fn init(allocator: std.mem.Allocator, path: []const u8, window: *c.SDL_Windo
 }
 
 pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
+    _ = c.SDL_SetRenderDrawColor(renderer, 0xcc, 0x8c, 0x3c, 255);
     var begin = @max(@intCast(usize, self.active_text.x), 0);
     var end = @min(@intCast(usize, self.active_text.y), self.file.items.len);
     var y: i32 = 0;
