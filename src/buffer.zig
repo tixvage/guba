@@ -91,6 +91,7 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
         var iterator = view.iterator();
         while (iterator.nextCodepointSlice()) |codepoint| {
             var ch = try std.unicode.utf8Decode(codepoint);
+            //TODO: tab support
             rn.renderCharacter(renderer, self.font, x * self.font.width, (y + 1) * self.font.height, ch);
             x += 1;
         }
