@@ -121,6 +121,11 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     const line_number = self.getLineNumber();
     var line = &self.file.items[line_number];
 
+    const keys = c.SDL_GetKeyboardState(null);
+    if (keys[c.SDL_SCANCODE_LCTRL] == 1 and keys[c.SDL_SCANCODE_A] == 1) {
+        print("keybinding yo!\n", .{});
+    }
+
     switch (sc) {
         c.SDL_SCANCODE_LEFT => {
             try self.cursorLeft();
