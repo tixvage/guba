@@ -193,6 +193,24 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             self.cursor.x = @intCast(i32, try std.unicode.utf8CountCodepoints(line.items));
             self.saveHorizontal();
         },
+        c.SDL_SCANCODE_DELETE => {
+            if (line.items.len == 0) {
+                if (self.file.items.len <= 1 or line_number + 1 >= self.file.items.len) return;
+                const deleted_line = self.file.orderedRemove(line_number);
+                deleted_line.deinit();
+            } else if (self.cursor.x == line.items.len) {
+                if (line_number + 1 >= self.file.items.len) return;
+                var line_next = &self.file.items[line_number + 1];
+                try line.appendSlice(line_next.items);
+                const deleted_line = self.file.orderedRemove(line_number + 1);
+                deleted_line.deinit();
+            } else {
+                var line_as_unicode = try su.utf8ToUnicode(self.allocator, line.items);
+                defer line_as_unicode.deinit();
+                _ = line_as_unicode.orderedRemove(@intCast(usize, self.cursor.x));
+                try su.updateUtf8(line, line_as_unicode.items);
+            }
+        },
         else => {},
     }
 }

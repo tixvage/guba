@@ -1,13 +1,14 @@
 GUBA TEXT EDITOR MANUAL
 
 Keybindings:
-    Move around:    Use the cursor keys
-    Delete text:    Press BACKSPACE
-    Insert line:    Press RETURN
-    Save file:      Press F1
-    Go to BOL:      Press HOME
-    Go to EOL:      Press END
-    Page Up:        Press PAGEUP
-    Page Down:      Press PAGEDOWN
+    Move around:                  Use the cursor keys
+    Delete previous character:    Press BACKSPACE
+    Delete current character:     Press DEL
+    Insert line:                  Press RETURN
+    Save file:                    Press F1
+    Go to BOL:                    Press HOME
+    Go to EOL:                    Press END
+    Page Up:                      Press PAGEUP
+    Page Down:                    Press PAGEDOWN
 
 Have fun :)

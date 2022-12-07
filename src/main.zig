@@ -22,9 +22,9 @@ pub fn main() !void {
 
     _ = c.SDL_Init(c.SDL_INIT_EVERYTHING);
     defer _ = c.SDL_Quit();
-    var window = c.SDL_CreateWindow("guba", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 600, 0) orelse @panic("could not init window");
+    var window = c.SDL_CreateWindow("guba", c.SDL_WINDOWPOS_UNDEFINED, c.SDL_WINDOWPOS_UNDEFINED, 800, 600, c.SDL_WINDOW_RESIZABLE).?;
     defer _ = c.SDL_DestroyWindow(window);
-    var renderer = c.SDL_CreateRenderer(window, -1, c.SDL_RENDERER_ACCELERATED) orelse @panic("could not init renderer");
+    var renderer = c.SDL_CreateRenderer(window, -1, c.SDL_RENDERER_ACCELERATED).?;
     defer _ = c.SDL_DestroyRenderer(renderer);
 
     var font = try Font.init(allocator, renderer, "SourceCodePro-Medium.ttf", 10);
