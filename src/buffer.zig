@@ -1,9 +1,13 @@
 const std = @import("std");
 const c = @import("sdl2");
+
 const rn = @import("rendering.zig");
 const su = @import("string_utils.zig");
-const print = std.debug.print;
+const settings = @import("settings.zig");
+
 const Font = @import("font.zig");
+
+const print = std.debug.print;
 
 pub const Utf8Line = su.Utf8Line;
 pub const UnicodeLine = su.UnicodeLine;
@@ -122,8 +126,12 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     var line = &self.file.items[line_number];
 
     const keys = c.SDL_GetKeyboardState(null);
-    if (keys[c.SDL_SCANCODE_LCTRL] == 1 and keys[c.SDL_SCANCODE_A] == 1) {
-        print("keybinding yo!\n", .{});
+    for (settings.keybindings) |keybinding| {
+        if (keys[keybinding.mod_key] == 1 and sc == keybinding.main_key) {
+            try keybinding.handler(self);
+            //TODO: do we really need to return?
+            return;
+        }
     }
 
     switch (sc) {
@@ -190,14 +198,6 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
         c.SDL_SCANCODE_F1 => {
             try self.save();
         },
-        c.SDL_SCANCODE_HOME => {
-            self.cursor.x = 0;
-            self.saveHorizontal();
-        },
-        c.SDL_SCANCODE_END => {
-            self.cursor.x = @intCast(i32, try std.unicode.utf8CountCodepoints(line.items));
-            self.saveHorizontal();
-        },
         c.SDL_SCANCODE_DELETE => {
             if (line.items.len == 0) {
                 if (self.file.items.len <= 1 or line_number + 1 >= self.file.items.len) return;
@@ -220,7 +220,7 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     }
 }
 
-fn save(self: *Self) !void {
+pub fn save(self: *Self) !void {
     const file = try std.fs.cwd().createFile(self.name, .{});
     defer file.close();
     for (self.file.items) |line| {
@@ -278,7 +278,7 @@ fn tryRecoverHorizontal(self: *Self) !void {
     self.cursor.x = @min(@intCast(i32, line_len), self.cursor.x);
 }
 
-fn saveHorizontal(self: *Self) void {
+pub fn saveHorizontal(self: *Self) void {
     self.cursor.last_horizontal_position = self.cursor.x;
 }
 

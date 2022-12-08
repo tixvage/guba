@@ -5,9 +5,9 @@ Keybindings:
     Delete previous character:    Press BACKSPACE
     Delete current character:     Press DEL
     Insert line:                  Press RETURN
-    Save file:                    Press F1
-    Go to BOL:                    Press HOME
-    Go to EOL:                    Press END
+    Save file:                    Press F1 or CTRL+S
+    Go to BOL:                    Press CTRL+A
+    Go to EOL:                    Press CTRL+E
     Page Up:                      Press PAGEUP
     Page Down:                    Press PAGEDOWN
 
