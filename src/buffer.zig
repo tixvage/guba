@@ -54,6 +54,7 @@ active_text: Range,
 name: []const u8,
 font: *Font,
 allocator: std.mem.Allocator,
+window: *c.SDL_Window,
 
 pub fn init(allocator: std.mem.Allocator, path: []const u8, window: *c.SDL_Window, font: *Font) !Self {
     var text: []u8 = undefined;
@@ -81,6 +82,7 @@ pub fn init(allocator: std.mem.Allocator, path: []const u8, window: *c.SDL_Windo
         .allocator = allocator,
         .active_text = .{ .y = @divTrunc(w_h, font.height) },
         .font = font,
+        .window = window,
     };
 }
 
@@ -143,10 +145,16 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
 
     const keys = c.SDL_GetKeyboardState(null);
     for (settings.keybindings) |keybinding| {
-        if (keys[keybinding.mod_key] == 1 and sc == keybinding.main_key) {
-            try keybinding.handler(self);
-            //TODO: do we really need to return?
-            return;
+        if (keybinding.mod_key) |mod| {
+            if (keys[mod] == 1 and sc == keybinding.main_key) {
+                try keybinding.handler(self);
+                return;
+            }
+        } else {
+            if (sc == keybinding.main_key) {
+                try keybinding.handler(self);
+                return;
+            }
         }
     }
 

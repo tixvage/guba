@@ -10,5 +10,6 @@ Keybindings:
     Go to EOL:                    Press CTRL+E
     Page Up:                      Press PAGEUP
     Page Down:                    Press PAGEDOWN
+    Toggle Fullscreen:            Press F11
 
 Have fun :)
