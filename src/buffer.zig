@@ -91,10 +91,10 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
     var y: i32 = 0;
     var x: i32 = 0;
     while (begin < end) : (begin += 1) {
-        const view = try std.unicode.Utf8View.init(self.file.items[begin].items);
-        var iterator = view.iterator();
-        while (iterator.nextCodepointSlice()) |codepoint| {
-            var ch = try std.unicode.utf8Decode(codepoint);
+        const line = self.file.items[begin].items;
+        const as_unicode = try su.utf8ToUnicode(self.allocator, line);
+        defer as_unicode.deinit();
+        for (as_unicode.items) |ch| {
             //TODO: tab support
             rn.renderCharacter(renderer, self.font, x * self.font.width, (y + 1) * self.font.height, ch);
             x += 1;
