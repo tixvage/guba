@@ -85,28 +85,44 @@ pub fn init(allocator: std.mem.Allocator, path: []const u8, window: *c.SDL_Windo
 }
 
 pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
-    _ = c.SDL_SetRenderDrawColor(renderer, 0xcc, 0x8c, 0x3c, 255);
     var begin = @max(@intCast(usize, self.active_text.x), 0);
     var end = @min(@intCast(usize, self.active_text.y), self.file.items.len);
     var y: i32 = 0;
     var x: i32 = 0;
     while (begin < end) : (begin += 1) {
+        const line_number = try std.fmt.allocPrint(self.allocator, "{d}", .{begin + 1});
+        defer self.allocator.free(line_number);
+
+        _ = c.SDL_SetRenderDrawColor(renderer, 0x68, 0x68, 0x68, 0xff);
+        var line_number_x: i32 = 3;
+        for (line_number) |ch| {
+            rn.renderCharacter(renderer, self.font, (line_number_x - @intCast(i32, line_number.len)) * self.font.width, (y + 1) * self.font.height, ch);
+            line_number_x += 1;
+        }
+
         const line = self.file.items[begin].items;
         const as_unicode = try su.utf8ToUnicode(self.allocator, line);
         defer as_unicode.deinit();
+
+        _ = c.SDL_SetRenderDrawColor(renderer, 0xbc, 0x7c, 0x2c, 0xff);
         for (as_unicode.items) |ch| {
             //TODO: tab support
-            rn.renderCharacter(renderer, self.font, x * self.font.width, (y + 1) * self.font.height, ch);
+            rn.renderCharacter(renderer, self.font, (x + 5) * self.font.width, (y + 1) * self.font.height, ch);
             x += 1;
         }
         y += 1;
         x = 0;
     }
 
-    _ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0x00, 0xff);
-
-    var cursor_rect = c.SDL_Rect{ .x = self.cursor.x * self.font.width, .y = (self.cursor.y * self.font.height) + @divTrunc(self.font.height, 4), .w = self.font.width, .h = self.font.height };
+    _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xee, 0xff);
+    var cursor_rect = c.SDL_Rect{ .x = (self.cursor.x + 5) * self.font.width, .y = (self.cursor.y * self.font.height) + @divTrunc(self.font.height, 4), .w = self.font.width, .h = self.font.height };
     _ = c.SDL_RenderDrawRect(renderer, &cursor_rect);
+
+    _ = c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_BLEND);
+    _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xaa, 20);
+    //TODO: I am too lazy to get window width and calculate proper width of highlighter
+    var line_highlighter = c.SDL_Rect{ .x = 5 * self.font.width, .y = (self.cursor.y * self.font.height) + @divTrunc(self.font.height, 4), .w = 1000, .h = self.font.height };
+    _ = c.SDL_RenderFillRect(renderer, &line_highlighter);
 }
 
 pub fn onTextinput(self: *Self, input: []const u8) !void {
