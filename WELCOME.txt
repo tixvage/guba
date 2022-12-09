@@ -11,5 +11,6 @@ Keybindings:
     Page Up:                      Press PAGEUP
     Page Down:                    Press PAGEDOWN
     Toggle Fullscreen:            Press F11
+    Delete line:                  Press SHIFT+DEL
 
 Have fun :)
