@@ -294,7 +294,7 @@ pub fn cursorUp(self: *Self) !void {
     try self.tryRecoverHorizontal();
 }
 
-fn tryRecoverHorizontal(self: *Self) !void {
+pub fn tryRecoverHorizontal(self: *Self) !void {
     const line = self.getCurrentLine();
     const line_len = @intCast(i32, try std.unicode.utf8CountCodepoints(line));
 

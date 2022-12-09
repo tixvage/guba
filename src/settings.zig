@@ -33,4 +33,5 @@ fn deleteCurrentLine(buffer: *Buffer) !void {
     const line_number = buffer.getLineNumber();
     const deleted_line = buffer.file.orderedRemove(line_number);
     deleted_line.deinit();
+    try buffer.tryRecoverHorizontal();
 }
