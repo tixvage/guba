@@ -95,9 +95,9 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
         const line_number = try std.fmt.allocPrint(self.allocator, "{d}", .{begin + 1});
         defer self.allocator.free(line_number);
 
-        _ = c.SDL_SetRenderDrawColor(renderer, 0x68, 0x68, 0x68, 0xff);
         var line_number_x: i32 = 3;
         for (line_number) |ch| {
+            if (begin == self.getLineNumber()) _ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0x00, 0xff) else _ = c.SDL_SetRenderDrawColor(renderer, 0x68, 0x68, 0x68, 0xff);
             rn.renderCharacter(renderer, self.font, (line_number_x - @intCast(i32, line_number.len)) * self.font.width, (y + 1) * self.font.height, ch);
             line_number_x += 1;
         }
