@@ -116,7 +116,7 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
         x = 0;
     }
 
-    _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xee, 0xff);
+    _ = c.SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0x00, 0xff);
     var cursor_rect = c.SDL_Rect{ .x = (self.cursor.x + 5) * self.font.width, .y = (self.cursor.y * self.font.height) + @divTrunc(self.font.height, 4), .w = self.font.width, .h = self.font.height };
     _ = c.SDL_RenderDrawRect(renderer, &cursor_rect);
 
