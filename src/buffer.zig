@@ -92,7 +92,10 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
     var y: i32 = 0;
     var x: i32 = 0;
     while (begin < end) : (begin += 1) {
-        const line_number = try std.fmt.allocPrint(self.allocator, "{d}", .{begin + 1});
+        const current_line = @intCast(i32, self.getLineNumber());
+        const abs_length = try std.math.absInt(current_line - @intCast(i32, begin));
+        const relative = if (abs_length == 0) current_line + 1 else abs_length;
+        const line_number = try std.fmt.allocPrint(self.allocator, "{d}", .{relative});
         defer self.allocator.free(line_number);
 
         var line_number_x: i32 = 3;
