@@ -42,22 +42,24 @@ fn deleteCurrentLine(buffer: *Buffer) !void {
 fn goNextWord(buffer: *Buffer) !void {
     const line = buffer.getCurrentLine();
     const line_as_unicode = try su.utf8ToUnicode(buffer.allocator, line);
-    const line_len = line_as_unicode.items.len;
     defer line_as_unicode.deinit();
 
     const current_pos = buffer.cursor.x;
-    var it = std.mem.split(u32, line_as_unicode.items[@intCast(usize, current_pos)..], &.{' '});
+    var it = std.mem.tokenize(u32, line_as_unicode.items[@intCast(usize, current_pos)..], &.{' '});
+
+    if (it.peek() == null and buffer.getLineNumber() + 1 != buffer.file.items.len) {
+        try buffer.cursorDown();
+        buffer.cursor.x = 0;
+        buffer.saveHorizontal();
+        return;
+    }
+
     if (it.next()) |_| {
-        if (it.index) |index| {
-            buffer.cursor.x = @intCast(i32, index) + current_pos;
-        } else {
-            if (buffer.cursor.x != @intCast(i32, line_len)) {
-                buffer.cursor.x = @intCast(i32, line_len);
-            } else {
-                //next line request
-                std.debug.print("triggered", .{});
-            }
-        }
+        buffer.cursor.x = @intCast(i32, it.index) + current_pos;
+    } else if (buffer.getLineNumber() + 1 != buffer.file.items.len) {
+        try buffer.cursorDown();
+        buffer.cursor.x = 0;
+        try goNextWord(buffer);
     }
     buffer.saveHorizontal();
 }
