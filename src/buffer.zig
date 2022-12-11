@@ -145,6 +145,7 @@ pub fn onTextinput(self: *Self, input: []const u8) !void {
 pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     const line_number = self.getLineNumber();
     var line = &self.file.items[line_number];
+    const line_codepoints_len = try std.unicode.utf8CountCodepoints(line.items);
 
     const keys = c.SDL_GetKeyboardState(null);
     for (settings.keybindings) |keybinding| {
@@ -230,7 +231,7 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
                 if (self.file.items.len <= 1 or line_number + 1 >= self.file.items.len) return;
                 const deleted_line = self.file.orderedRemove(line_number);
                 deleted_line.deinit();
-            } else if (self.cursor.x == line.items.len) {
+            } else if (self.cursor.x == line_codepoints_len) {
                 if (line_number + 1 >= self.file.items.len) return;
                 var line_next = &self.file.items[line_number + 1];
                 try line.appendSlice(line_next.items);
