@@ -11,7 +11,6 @@ Keybindings:
     Page Up:                      Press PAGEUP
     Page Down:                    Press PAGEDOWN
     Toggle Fullscreen:            Press F11
-    Delete Line:                  Press SHIFT+DEL
     Go to Next Word               Press CTRL+LEFT
 
 Have fun :)

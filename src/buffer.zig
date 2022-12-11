@@ -310,7 +310,7 @@ pub fn saveHorizontal(self: *Self) void {
     self.cursor.last_horizontal_position = self.cursor.x;
 }
 
-fn scroll(self: *Self, amount: i32) void {
+pub fn scroll(self: *Self, amount: i32) void {
     const total_lines = @intCast(i32, self.file.items.len);
     const range = self.active_text.y - self.active_text.x;
     if (self.active_text.x + amount < 0) {
