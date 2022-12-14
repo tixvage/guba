@@ -1,7 +1,5 @@
 # guba
 
-![](screenshots/1.png)
-
 # Quick Start 
 
 ## Usage
@@ -17,6 +15,10 @@ $ zig build run -- WELCOME.txt
  $ zig build run -Drelease-fast -- <filepath>
  ```
  * **DON'T TRY TO EDIT AN IMPORTANT FILE (it is not fully bug free)**
+
+# Screenshots
+
+![](screenshots/1.png)
 
 # Font
 
