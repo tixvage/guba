@@ -1,5 +1,7 @@
 # guba
 
+![](screenshots/1.png)
+
 # Quick Start 
 
 ## Usage
