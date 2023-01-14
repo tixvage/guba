@@ -6,6 +6,12 @@ const c = @import("sdl2");
 const rn = @import("rendering.zig");
 const Font = @import("font.zig");
 const Buffer = @import("buffer.zig");
+const Browser = @import("browser.zig");
+
+const Mode = enum {
+    file_browser,
+    text_editor,
+};
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -31,8 +37,11 @@ pub fn main() !void {
     defer font.deinit();
     var buffer = try Buffer.init(allocator, filename.?, window, &font);
     defer buffer.deinit();
+    var browser = try Browser.init(allocator, ".");
+    defer browser.deinit();
 
     var quit = false;
+    var mode = Mode.text_editor;
 
     while (!quit) {
         var event: c.SDL_Event = undefined;
@@ -60,20 +69,42 @@ pub fn main() !void {
                 },
                 c.SDL_KEYDOWN => {
                     var sc = event.key.keysym.scancode;
-                    try buffer.onKeydown(sc);
+                    if (sc == c.SDL_SCANCODE_F3) {
+                        mode = if (mode == .text_editor) .file_browser else .text_editor;
+                    }
+                    switch (mode) {
+                        .text_editor => try buffer.onKeydown(sc),
+                        .file_browser => {},
+                    }
                 },
                 c.SDL_TEXTINPUT => {
                     var input = event.text.text;
                     var i: usize = 0;
                     while (input[i] != 0) : (i += 1) {}
-                    try buffer.onTextinput(input[0..i]);
+                    if (mode == .text_editor) {
+                        try buffer.onTextInput(input[0..i]);
+                    }
                 },
                 else => {},
             }
         }
         _ = c.SDL_SetRenderDrawColor(renderer, 24, 24, 24, 255);
         _ = c.SDL_RenderClear(renderer);
-        try buffer.render(renderer);
+        switch (mode) {
+            .text_editor => try buffer.render(renderer),
+            .file_browser => {
+                //var y: i32 = 0;
+                //for (entries.items) |entry| {
+                //    var x: i32 = 0;
+                //    for (entry.name) |ch| {
+                //        _ = c.SDL_SetRenderDrawColor(renderer, 255, 24, 24, 255);
+                //        rn.renderCharacter(renderer, &font, 50 + (x * font.width), (y + 1) * font.height, ch);
+                //        x += 1;
+                //    }
+                //    y += 1;
+                //}
+            },
+        }
         c.SDL_RenderPresent(renderer);
         c.SDL_Delay(1000 / 60);
     }

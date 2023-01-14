@@ -130,7 +130,7 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer) !void {
     _ = c.SDL_RenderFillRect(renderer, &line_highlighter);
 }
 
-pub fn onTextinput(self: *Self, input: []const u8) !void {
+pub fn onTextInput(self: *Self, input: []const u8) !void {
     var line = &self.file.items[self.getLineNumber()];
     var line_as_unicode = try su.utf8ToUnicode(self.allocator, line.items);
     defer line_as_unicode.deinit();
