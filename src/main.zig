@@ -32,7 +32,7 @@ pub fn main() !void {
     globals.renderer = c.SDL_CreateRenderer(globals.window, -1, c.SDL_RENDERER_ACCELERATED).?;
     defer _ = c.SDL_DestroyRenderer(globals.renderer);
 
-    globals.font = try Font.init(allocator, globals.renderer, "SourceCodePro-Medium.ttf", 20);
+    globals.font = try Font.init(allocator, globals.renderer, "SourceCodePro-Medium.ttf", 10);
     defer globals.font.deinit();
     if (filename) |path| {
         var buffer = try allocator.create(Buffer);
