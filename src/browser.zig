@@ -1,8 +1,9 @@
 const std = @import("std");
 const c = @import("sdl2");
 const rn = @import("rendering.zig");
-const FsEntry = std.fs.IterableDir.Entry;
+const globals = @import("globals.zig");
 const Font = @import("font.zig");
+const Buffer = @import("buffer.zig");
 
 const Entry = struct {
     name: []u8,
@@ -73,11 +74,20 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
             self.index = @min(self.entries.items.len - 1, self.index + 1);
         },
         c.SDL_SCANCODE_RETURN => {
-            const old_name = self.entries.items[self.index].name;
+            const entry = self.entries.items[self.index];
+            const old_name = entry.name;
             var name = try self.allocator.alloc(u8, old_name.len);
             defer self.allocator.free(name);
             std.mem.copy(u8, name, old_name);
-            try self.updateEntries(name);
+            switch (entry.kind) {
+                .folder => try self.updateEntries(name),
+                .file => {
+                    var buffer = try globals.allocator.create(Buffer);
+                    buffer.* = try Buffer.init(globals.allocator, name, globals.window, &globals.font);
+                    globals.changeBuffer(buffer);
+                    globals.mode = .text_editor;
+                },
+            }
             self.index = 0;
         },
         else => {},

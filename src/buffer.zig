@@ -248,6 +248,7 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
     }
 }
 
+//TODO: it is bad idea to save file to directly in cwd this can cause problems with multiple buffers
 pub fn save(self: *Self) !void {
     const file = try std.fs.cwd().createFile(self.name, .{});
     defer file.close();
