@@ -76,9 +76,12 @@ pub fn init(allocator: std.mem.Allocator, path: []const u8, window: *c.SDL_Windo
     var w_w: i32 = 0;
     var w_h: i32 = 0;
     c.SDL_GetWindowSize(window, &w_w, &w_h);
+
+    var name = try allocator.alloc(u8, path.len);
+    std.mem.copy(u8, name, path);
     return .{
         .file = file,
-        .name = path,
+        .name = name,
         .allocator = allocator,
         .active_text = .{ .y = @divTrunc(w_h, font.height) },
         .font = font,
@@ -344,4 +347,5 @@ pub fn deinit(self: *Self) void {
         line.deinit();
     }
     self.file.deinit();
+    self.allocator.free(self.name);
 }

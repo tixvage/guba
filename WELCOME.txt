@@ -11,6 +11,7 @@ Keybindings:
     Page Up:                      Press PAGEUP
     Page Down:                    Press PAGEDOWN
     Toggle Fullscreen:            Press F11
-    Go to Next Word               Press CTRL+LEFT
+    Go to Next Word:              Press CTRL+LEFT
+    Toggle Browser-Edit Mode:     Press F3
 
 Have fun :)
