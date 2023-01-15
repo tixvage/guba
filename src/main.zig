@@ -33,7 +33,7 @@ pub fn main() !void {
     var renderer = c.SDL_CreateRenderer(window, -1, c.SDL_RENDERER_ACCELERATED).?;
     defer _ = c.SDL_DestroyRenderer(renderer);
 
-    var font = try Font.init(allocator, renderer, "SourceCodePro-Medium.ttf", 10);
+    var font = try Font.init(allocator, renderer, "SourceCodePro-Medium.ttf", 20);
     defer font.deinit();
     var buffer = try Buffer.init(allocator, filename.?, window, &font);
     defer buffer.deinit();
@@ -92,18 +92,7 @@ pub fn main() !void {
         _ = c.SDL_RenderClear(renderer);
         switch (mode) {
             .text_editor => try buffer.render(renderer),
-            .file_browser => {
-                //var y: i32 = 0;
-                //for (entries.items) |entry| {
-                //    var x: i32 = 0;
-                //    for (entry.name) |ch| {
-                //        _ = c.SDL_SetRenderDrawColor(renderer, 255, 24, 24, 255);
-                //        rn.renderCharacter(renderer, &font, 50 + (x * font.width), (y + 1) * font.height, ch);
-                //        x += 1;
-                //    }
-                //    y += 1;
-                //}
-            },
+            .file_browser => try browser.render(renderer, &font),
         }
         c.SDL_RenderPresent(renderer);
         c.SDL_Delay(1000 / 60);
