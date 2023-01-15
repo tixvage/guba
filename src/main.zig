@@ -21,7 +21,8 @@ const Mode = enum {
 pub fn main() !void {
     defer _ = globals.gpa.deinit();
 
-    var args = std.process.args();
+    var args = try std.process.argsWithAllocator(allocator);
+    defer args.deinit();
     _ = args.next().?;
     const filename = args.next();
 

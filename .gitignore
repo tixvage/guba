@@ -1,2 +1,4 @@
+sdl-devel/
+.build_config/
 zig-out/
 zig-cache/
