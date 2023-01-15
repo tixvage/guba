@@ -72,6 +72,14 @@ pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
         c.SDL_SCANCODE_DOWN => {
             self.index = @min(self.entries.items.len - 1, self.index + 1);
         },
+        c.SDL_SCANCODE_RETURN => {
+            const old_name = self.entries.items[self.index].name;
+            var name = try self.allocator.alloc(u8, old_name.len);
+            defer self.allocator.free(name);
+            std.mem.copy(u8, name, old_name);
+            try self.updateEntries(name);
+            self.index = 0;
+        },
         else => {},
     }
 }
