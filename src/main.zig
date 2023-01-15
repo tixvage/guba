@@ -74,7 +74,7 @@ pub fn main() !void {
                     }
                     switch (mode) {
                         .text_editor => try buffer.onKeydown(sc),
-                        .file_browser => {},
+                        .file_browser => try browser.onKeydown(sc),
                     }
                 },
                 c.SDL_TEXTINPUT => {

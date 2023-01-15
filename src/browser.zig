@@ -14,12 +14,14 @@ const Self = @This();
 current_abspath: std.ArrayList(u8),
 entries: std.ArrayList(Entry),
 allocator: std.mem.Allocator,
+index: usize,
 
 pub fn init(allocator: std.mem.Allocator, initial_path: []const u8) !Self {
     var self = Self{
         .current_abspath = std.ArrayList(u8).init(allocator),
         .entries = std.ArrayList(Entry).init(allocator),
         .allocator = allocator,
+        .index = 0,
     };
     try self.updateEntries(initial_path);
 
@@ -55,6 +57,22 @@ pub fn render(self: *Self, renderer: *c.SDL_Renderer, font: *Font) !void {
         for (entry.name) |ch, x| {
             rn.renderCharacter(renderer, font, 50 + (@intCast(i32, x) * font.width), @intCast(i32, y + 1) * font.height, ch);
         }
+    }
+    _ = c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_BLEND);
+    _ = c.SDL_SetRenderDrawColor(renderer, 0xaa, 0xaa, 0xaa, 0x77);
+    var line_rect = c.SDL_Rect{ .x = 50, .y = (@intCast(i32, self.index) * font.height) + @divTrunc(font.height, 4), .w = font.width * @intCast(i32, self.entries.items[self.index].name.len), .h = font.height };
+    _ = c.SDL_RenderFillRect(renderer, &line_rect);
+}
+
+pub fn onKeydown(self: *Self, sc: c.SDL_Scancode) !void {
+    switch (sc) {
+        c.SDL_SCANCODE_UP => {
+            self.index = @intCast(usize, @max(0, @intCast(i32, self.index) - 1));
+        },
+        c.SDL_SCANCODE_DOWN => {
+            self.index = @min(self.entries.items.len - 1, self.index + 1);
+        },
+        else => {},
     }
 }
 
